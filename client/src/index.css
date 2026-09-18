@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg-primary: #FAF8F5;
+  --color-bg-secondary: #FFFFFF;
+  --color-bg-tertiary: #F1EDE6;
+  --color-accent: #2F6F4E;
+  --color-accent-light: #E4EFE8;
+  --color-accent-dark: #204E37;
+  --color-secondary: #C97B3C;
+  --color-text-primary: #22261F;
+  --color-text-secondary: #5C6156;
+  --color-border: #E5E1D8;
+  --color-success: #2F9E44;
+  --color-warning: #E6A93C;
+  --color-danger: #D14343;
+  --color-info: #3B7DD8;
+}
+
+body {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, .font-serif {
+  font-family: 'Fraunces', serif;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F1EDE6;
+}
+::-webkit-scrollbar-thumb {
+  background: #C8C2B8;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2F6F4E;
+}
+
+/* Glassmorphism subtle card styling */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
+}
+
+.btn-primary {
+  @apply bg-accent hover:bg-accent-dark text-white font-medium px-5 py-2.5 rounded-btn transition-all duration-200 shadow-sm active:scale-95 disabled:opacity-50 disabled:pointer-events-none;
+}
+
+.btn-secondary {
+  @apply bg-secondary hover:bg-secondary-dark text-white font-medium px-5 py-2.5 rounded-btn transition-all duration-200 shadow-sm active:scale-95 disabled:opacity-50 disabled:pointer-events-none;
+}
+
+.btn-outline {
+  @apply border border-border bg-white hover:bg-bg-tertiary text-text-primary font-medium px-5 py-2.5 rounded-btn transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none;
+}
+
+.card-base {
+  @apply bg-white rounded-card border border-border shadow-soft p-6 transition-all duration-200;
+}
