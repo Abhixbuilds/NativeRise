@@ -1,0 +1,77 @@
+# Continue NativeRise MERN Full‑Stack Development
+
+## Goal Description
+We will progress the NativeRise platform by implementing core backend services, completing key frontend components, and applying a premium, dynamic UI design as described in the original README. The focus is on:
+- Split‑order engine and stock reservation logic
+- Delivery fee calculator, profit calculator, and growth‑vault automation
+- COD‑to‑digital reconciliation and real‑time socket updates
+- Multilingual UI, voice grievance handling, and Snap & Sell AI assistant
+- Razorpay sandbox modal with full payment flow
+- polished, glassmorphism‑style React UI with micro‑animations
+
+## User Review Required
+> [!IMPORTANT]
+> The plan introduces several new backend cron jobs and socket events that may affect existing data. Please confirm that you are okay with adding these scheduled tasks and real‑time updates.
+
+## Open Questions
+> [!WARNING]
+> 1. Do you prefer using **Zustand** (already present) or **Redux Toolkit** for new global state (e.g., AI suggestion state)?
+> 2. Should the AI Snap & Sell feature use a third‑party vision API (e.g., Google Vision) or a placeholder mock?
+> 3. Do you want the premium UI theme to be dark‑mode default with a toggle, or light‑mode default?
+
+## Proposed Changes
+---
+### Backend (`server/`)
+- **[MODIFY] `server/models/Order.js`**: Add `makerOrders` array, split‑order fields, and profit calculation hooks.
+- **[NEW] `server/services/splitOrderEngine.js`**: Logic to create maker‑specific order documents from a single checkout.
+- **[NEW] `server/services/stockReservation.js`**: Reserve stock on cart add, expose release function.
+- **[NEW] `server/cron/stockReleaser.js`**: Minute‑interval cron to clear expired reservations.
+- **[NEW] `server/services/deliveryFeeCalculator.js`**: Implements the formula `30 + distanceKm*4 + ceil(weight/500)*5` with seasonal delay adjustments.
+- **[NEW] `server/services/profitCalculator.js`**: Net profit computation including platform and payment fees.
+- **[NEW] `server/services/growthVault.js`**: Auto‑lock a % of net profit on order delivery.
+- **[MODIFY] `server/controllers/paymentController.js`**: Integrate Razorpay sandbox flow and COD confirmation endpoint.
+- **[NEW] `server/socket/events.js`**: Emit real‑time updates for order status, stock changes, and COD cash collection.
+- **[NEW] `server/cron/cronJobs.js`**: Register all cron jobs (stock releaser, growth vault timer).
+- **[MODIFY] `server/routes/api/v1/orders.js`**: Hook split‑order engine and profit calculator.
+
+---
+### Frontend (`client/`)
+- **[MODIFY] `client/src/layouts/RootLayout.jsx`**: Add dark‑mode toggle, import Google Font *Inter*.
+- **[NEW] `client/src/components/ui/GlassCard.jsx`**: Reusable glassmorphism card component with hover micro‑animation.
+- **[NEW] `client/src/components/checkout/SplitCheckout.jsx`**: UI to display maker‑wise breakdown and payment split.
+- **[NEW] `client/src/components/cart/StockBadge.jsx`**: Shows reservation timer countdown.
+- **[NEW] `client/src/services/api.js`**: Centralize Axios instance with interceptors for auth & error handling.
+- **[NEW] `client/src/store/aiStore.js`**: Zustand store for Snap & Sell suggestions.
+- **[NEW] `client/src/components/ai/SnapSellAssistant.jsx`**: Upload image, show AI‑generated title/category/price (mock response).
+- **[NEW] `client/src/components/payments/RazorpayModal.jsx`**: Premium modal with animated states (loading, success, error).
+- **[MODIFY] `client/src/i18n.js`**: Load 12 language JSON files, add language switcher in header.
+- **[NEW] `client/src/components/grievance/VoiceRecorder.jsx`**: Record audio, display transcription (placeholder).
+- **[NEW] `client/src/components/common/AnimatedButton.jsx`**: Button with subtle scale‑on‑hover animation.
+- **[MODIFY] `client/src/App.jsx`**: Wrap routes with `RouteGuard` for role‑based access.
+
+---
+### Styling & Assets
+- **`client/src/index.css`**: Define CSS variables for primary/secondary gradients, glass background, and transition timings.
+- **Add** `client/public/fonts/Inter-*.woff2` (download via Google Fonts).
+- **Create** `client/src/assets/theme.jpg` (generated via `generate_image` for hero banner).
+- **Update** Tailwind config to enable JIT mode and custom color palette.
+
+## Verification Plan
+### Automated Tests
+- Run existing `npm test` (if present) after each backend change.
+- Add unit tests for `splitOrderEngine` and `profitCalculator` using Jest.
+- Add Cypress end‑to‑end tests for split checkout flow and Razorpay modal.
+
+### Manual Verification
+- Start dev servers (`npm run dev`) and verify:
+  * Cart adds reserve stock with 10‑minute timer.
+  * Checkout creates multiple maker orders and shows correct profit breakdown.
+  * Delivery fee displayed matches calculation.
+  * Growth vault auto‑locks profit on delivery.
+  * COD cash confirmation updates seller wallet instantly.
+  * UI theme toggles, glass cards render with micro‑animations.
+  * Language switcher updates texts instantly.
+  * Snap & Sell assistant returns mock suggestions.
+  * Voice grievance records and displays transcription.
+
+Please review the plan and answer the open questions so we can proceed.

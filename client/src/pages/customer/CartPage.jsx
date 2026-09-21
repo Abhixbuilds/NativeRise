@@ -12,6 +12,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { useCartStore } from '../../store/useStores';
+import StockBadge from '../../components/ui/StockBadge';
 import { checkoutService } from '../../services/services';
 
 export const CartPage = () => {
@@ -142,6 +143,7 @@ export const CartPage = () => {
                       +
                     </button>
                   </div>
+                  <StockBadge productId={p._id} initialExpiry={new Date(item.reservedUntil).getTime()} />
 
                   <div className="text-right">
                     <span className="font-serif text-base font-bold text-text-primary block">

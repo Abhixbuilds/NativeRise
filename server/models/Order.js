@@ -23,11 +23,25 @@ const profitBreakdownSchema = new mongoose.Schema({
   actualProfit: Number,
   profitMarginPercent: Number
 }, { _id: false });
+const makerOrderSchema = new mongoose.Schema({
+  sellerId: { type: mongoose.Schema.Types.ObjectId, ref: 'SellerProfile', required: true },
+  items: [orderItemSchema],
+  profitBreakdown: profitBreakdownSchema,
+  status: {
+    type: String,
+    enum: ['placed', 'accepted', 'rejected', 'ready_for_pickup', 'picked_up',
+           'in_transit', 'delivered', 'cancelled', 'refunded'],
+    default: 'placed'
+  },
+  deliveryCost: { type: Number, required: true }
+}, { _id: false });
+
 
 const orderSchema = new mongoose.Schema({
   customerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   sellerId: { type: mongoose.Schema.Types.ObjectId, ref: 'SellerProfile', required: true },
   items: [orderItemSchema],
+  makerOrders: [makerOrderSchema],
   paymentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Payment', required: true },
   status: {
     type: String,

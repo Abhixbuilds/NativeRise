@@ -434,23 +434,20 @@ const markDelivered = async (req, res, next) => {
     });
 
     // Auto Growth Savings Vault Calculation (§7.8)
+    // Use GrowthVault service to lock profit on delivery
+    const { lockProfit } = require('../services/growthVault');
+    await lockProfit(order);
+    // Re-fetch seller for later notifications and credit wallet
     const seller = await SellerProfile.findById(order.sellerId._id);
-    if (seller) {
-      const profit = order.profitBreakdown?.actualProfit || 0;
-      const vaultPercent = seller.vault?.balancePercentSetting || 10;
-      const vaultContribution = Number(((profit * vaultPercent) / 100).toFixed(2));
-      const walletCredit = Number((profit - vaultContribution).toFixed(2));
 
-      if (!seller.vault) {
-        seller.vault = { balancePercentSetting: 10, lockedAmount: 0, unlockHistory: [] };
-      }
-
-      seller.vault.lockedAmount = Number(((seller.vault.lockedAmount || 0) + vaultContribution).toFixed(2));
-      seller.walletBalance = Number(((seller.walletBalance || 0) + walletCredit).toFixed(2));
-      seller.totalOrders = (seller.totalOrders || 0) + 1;
-
-      await seller.save();
-    }
+    // Credit remaining profit to seller's wallet and increment orders
+    const profit = order.profitBreakdown?.actualProfit || 0;
+    const vaultPercent = seller.vault?.balancePercentSetting ?? 10;
+    const lockAmount = Number(((profit * vaultPercent) / 100).toFixed(2));
+    const walletCredit = Number((profit - lockAmount).toFixed(2));
+    seller.walletBalance = Number(((seller.walletBalance || 0) + walletCredit).toFixed(2));
+    seller.totalOrders = (seller.totalOrders || 0) + 1;
+    await seller.save();
 
     await order.save();
 
